@@ -90,18 +90,20 @@ export default function AdminPage() {
       setHotspots(hotspotData);
       setRecentFollowUps(followupData);
 
-      const userIds = Array.from(new Set(reportData.map((r: any) => r.user_id).filter(Boolean)));
+      const userIds: string[] = Array.from(
+  new Set(reportData.map((r: any) => r.user_id).filter(Boolean))
+) as string[];
 
-      const trustEntries = await Promise.all(
-        userIds.map(async (userId: string) => {
-          try {
-            const trust = await getUserTrust(userId);
-            return [userId, trust];
-          } catch {
-            return [userId, null];
-          }
-        })
-      );
+const trustEntries = await Promise.all(
+  userIds.map(async (userId: string) => {
+    try {
+      const trust = await getUserTrust(userId);
+      return [userId, trust];
+    } catch {
+      return [userId, null];
+    }
+  })
+);
 
       setUserTrustMap(Object.fromEntries(trustEntries));
     } catch (error) {
