@@ -5,3 +5,4 @@ supabase
 google-generativeai
 scikit-learn
 numpy
+requests

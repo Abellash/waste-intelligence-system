@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import reports, comments, ai, priority, votes, hotspots, status, followups, trust
-
+import requests
+from app.config import SUPABASE_URL, SUPABASE_KEY
 app = FastAPI()
 
 app.add_middleware(
@@ -36,3 +37,31 @@ def debug_env():
         "has_supabase_key": bool(SUPABASE_KEY),
         "supabase_url_starts_with_https": SUPABASE_URL.startswith("https://") if SUPABASE_URL else False,
     }
+
+@app.get("/debug-supabase")
+def debug_supabase():
+    try:
+        url = f"{SUPABASE_URL}/rest/v1/waste_reports?select=*&limit=1"
+
+        response = requests.get(
+            url,
+            headers={
+                "apikey": SUPABASE_KEY,
+                "Authorization": f"Bearer {SUPABASE_KEY}",
+            },
+            timeout=10,
+        )
+
+        return {
+            "supabase_url": SUPABASE_URL,
+            "url_used": url,
+            "status_code": response.status_code,
+            "response_text": response.text[:500],
+        }
+
+    except Exception as e:
+        return {
+            "error": str(e),
+            "supabase_url": SUPABASE_URL,
+            "url_used": f"{SUPABASE_URL}/rest/v1/waste_reports?select=*&limit=1",
+        }
