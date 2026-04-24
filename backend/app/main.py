@@ -26,3 +26,13 @@ app.include_router(trust.router)
 @app.get("/")
 def root():
     return {"message": "Backend is running"}
+
+from app.config import SUPABASE_URL, SUPABASE_KEY
+
+@app.get("/debug-env")
+def debug_env():
+    return {
+        "supabase_url": SUPABASE_URL,
+        "has_supabase_key": bool(SUPABASE_KEY),
+        "supabase_url_starts_with_https": SUPABASE_URL.startswith("https://") if SUPABASE_URL else False,
+    }
